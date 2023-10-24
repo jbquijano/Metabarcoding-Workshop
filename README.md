@@ -1,2 +1,5 @@
-# Metabarcoding-Workshop
-MMBL metabarcoding workshop
+# Metabarcoding Workshop MMBL
+---
+## Workshop Description
+---
+
