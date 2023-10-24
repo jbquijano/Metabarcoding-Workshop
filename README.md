@@ -1,6 +1,6 @@
 # Metabarcoding Workshop MMBL
 ## Workshop Description
-The advent of cheaper high-throughput sequencing facilitated an explosion in microbiome datasets. Becoming increasingly available and denser, researchers are now inundated by huge microbiome/metabarcoding datasets that are sometimes misanalyzed or left unanalyzed due to either unavaibility of computers with sufficient computational power or, which is mostly the case, lack of data analysis skills.
+The advent of high-throughput sequencing and its lowering costs facilitated an explosion in microbiome datasets. Becoming increasingly available and denser, researchers are now inundated by huge microbiome/metabarcoding datasets that are sometimes misanalyzed or left unanalyzed due to either the unavailability of computers with sufficient computational power or, which is mostly the case, lack of data analysis skills.
 
 The main objective of this workshop is to give MMBL students and research associates a hands-on experience in working with microbiome datasets and introduce them to the common tools used in analyzing metabarcodes.
 
