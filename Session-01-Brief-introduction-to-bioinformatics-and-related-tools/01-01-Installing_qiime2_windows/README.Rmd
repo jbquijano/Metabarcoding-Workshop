@@ -27,7 +27,6 @@ Run WSL
 knitr::include_graphics('01-01_Picture-02.png')
 ```
 
-
 In your WSL, run the following codes:
 
 ```{r code_01, eval=FALSE}
@@ -35,5 +34,60 @@ mkdir -p ~/miniconda3
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
 bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
 rm -rf ~/miniconda3/miniconda.sh
+```
+
+After installing, initialize your newly-installed Miniconda. The following commands initialize for bash and zsh shells:
+
+```{r code_02, eval=FALSE}
+~/miniconda3/bin/conda init bash
+~/miniconda3/bin/conda init zsh
+```
+
+## Install QIIME2
+Once Miniconda is installed, install QIIME2.
+
+```{r code_03, eval=FALSE}
+wget https://data.qiime2.org/distro/core/qiime2-2023.7-py38-linux-conda.yml
+conda env create -n qiime2-2023.7 --file qiime2-2023.7-py38-linux-conda.yml
+```
+
+Optional cleanup:
+
+```{r code_04, eval=FALSE}
+rm qiime2-2023.7-py38-linux-conda.yml
+```
+
+## Activate QIIME2 conda environment
+Activate the `conda` environment.
+
+```{r code_05, eval=FALSE}
+conda activate qiime2-2023.7
+```
+
+
+Test your installation.
+
+```{r code_06, eval=FALSE}
+qiime --help
+```
+
+## Install JupyterLab, our IDE of choice
+Install jupyterlab through conda
+
+```{r code_07, eval=FALSE}
+conda install -c conda-forge jupyterlab
+```
+
+Run jupyterlab
+
+```{r code_08, eval=FALSE}
+jupyter lab --no-browser
+```
+
+## Open JupyterLab
+Do all your codes in jupyterlab. Access it by getting the link produced by your terminal (see example below).
+
+```{r picture_03, echo=FALSE}
+knitr::include_graphics('01-01_Picture-03.png')
 ```
 
