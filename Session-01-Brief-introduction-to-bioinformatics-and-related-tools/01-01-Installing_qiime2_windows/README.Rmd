@@ -6,7 +6,7 @@ output: rmarkdown::github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Session 01-01. Installing QIIME2 in Windows
+# Session 01-02. Installing QIIME2 in Windows
 ## Install WSL
 You cannot natively install QIIME2 in Windows natively.
 
@@ -15,7 +15,7 @@ To install it, you need a Linux environment to run it.
 Open **PowerShell** or **Windows Command Prompt** in administratot mode by right-clicking and selecting "Run as administrator."
 
 ```{r picture_01, echo=FALSE}
-knitr::include_graphics('01-01_Picture-01.png')
+knitr::include_graphics('01-02_Picture-01.png')
 ```
 
 **Note:** Ubuntu will be installed as a default.
@@ -24,7 +24,7 @@ knitr::include_graphics('01-01_Picture-01.png')
 Run WSL
 
 ```{r picture_02, echo=FALSE}
-knitr::include_graphics('01-01_Picture-02.png')
+knitr::include_graphics('01-02_Picture-02.png')
 ```
 
 In your WSL, run the following codes:
@@ -88,6 +88,6 @@ jupyter lab --no-browser
 Do all your codes in jupyterlab. Access it by getting the link produced by your terminal (see example below).
 
 ```{r picture_03, echo=FALSE}
-knitr::include_graphics('01-01_Picture-03.png')
+knitr::include_graphics('01-02_Picture-03.png')
 ```
 

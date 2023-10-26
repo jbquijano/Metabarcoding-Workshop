@@ -1,5 +1,5 @@
 
-# Session 01-01. Installing QIIME2 in Windows
+# Session 01-02. Installing QIIME2 in Windows
 
 ## Install WSL
 
@@ -10,7 +10,7 @@ To install it, you need a Linux environment to run it.
 Open **PowerShell** or **Windows Command Prompt** in administratot mode
 by right-clicking and selecting “Run as administrator.”
 
-![](01-01_Picture-01.png)<!-- -->
+![](01-02_Picture-01.png)<!-- -->
 
 **Note:** Ubuntu will be installed as a default.
 
@@ -18,7 +18,7 @@ by right-clicking and selecting “Run as administrator.”
 
 Run WSL
 
-![](01-01_Picture-02.png)<!-- -->
+![](01-02_Picture-02.png)<!-- -->
 
 In your WSL, run the following codes:
 
@@ -85,4 +85,4 @@ jupyter lab --no-browser
 Do all your codes in jupyterlab. Access it by getting the link produced
 by your terminal (see example below).
 
-![](01-01_Picture-03.png)<!-- -->
+![](01-02_Picture-03.png)<!-- -->
