@@ -8,11 +8,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Session 01-02. Installing QIIME2 in Windows
 ## Install WSL
-You cannot natively install QIIME2 in Windows natively.
+You cannot natively install QIIME2 in Windows.
 
 To install it, you need a Linux environment to run it.
 
-Open **PowerShell** or **Windows Command Prompt** in administratot mode by right-clicking and selecting "Run as administrator."
+Open **PowerShell** or **Windows Command Prompt** in administrator mode by right-clicking and selecting "Run as administrator."
 
 ```{r picture_01, echo=FALSE}
 knitr::include_graphics('01-02_Picture-01.png')
