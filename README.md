@@ -15,5 +15,6 @@ This workshop includes:
 3. ITS2 Symbiodiniaceae workflow in R and RStudio
 - Symportal, what gives?
 - Navigating RStudio
+- Short intro to R
 - Data cleaning
 - ITS2 community analysis
