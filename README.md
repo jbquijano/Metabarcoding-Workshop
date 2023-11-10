@@ -5,6 +5,7 @@ The advent of high-throughput sequencing and its lowering costs facilitated an e
 The main objective of this workshop is to give MMBL students and research associates a hands-on experience in working with microbiome datasets and introduce them to the common tools used in analyzing metabarcodes.
 
 This workshop includes:
+
 1 Brief introduction to bioinformatics and related tools
 
 2 16S microbiome analysis using QIIME2 
