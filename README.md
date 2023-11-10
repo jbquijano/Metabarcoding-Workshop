@@ -7,11 +7,9 @@ The main objective of this workshop is to give MMBL students and research associ
 This workshop includes:
 1. Brief introduction to bioinformatics and related tools
 2. 16S microbiome analysis using QIIME2 
-- Community analysis
+- Short intro to Metabarcoding, community analysis and QIIME2
 - Navigating Jupyterlab
-- QIIME2, what gives?
-- Data cleaning
-- Microbiome community analysis
+- Micriobiome community analysis (demo)
 3. ITS2 Symbiodiniaceae workflow in R and RStudio
 - Symportal, what gives?
 - Ecological statistics, reitration
