@@ -18,5 +18,5 @@ This workshop includes:
 - Ecological statistics, reitration
 - Navigating RStudio
 - Short intro to R
-- Data cleaning
+- Sample submission to Symportal
 - ITS2 community analysis
