@@ -10,7 +10,7 @@ This workshop includes:
 
 2 16S microbiome analysis using QIIME2 
 - Short intro to Metabarcoding, community analysis and QIIME2
-- Navigating Jupyterlab
+- Short intro to CLI and navigating through JLab
 - Micriobiome community analysis (demo)
 
 3 ITS2 Symbiodiniaceae workflow in R and RStudio
