@@ -8,10 +8,12 @@ This workshop includes:
 
 1 Brief introduction to bioinformatics and related tools
 
+
 2 16S microbiome analysis using QIIME2 
 - Short intro to Metabarcoding, community analysis and QIIME2
 - Navigating Jupyterlab
 - Micriobiome community analysis (demo)
+
 
 3 ITS2 Symbiodiniaceae workflow in R and RStudio
 - Symportal, what gives?
