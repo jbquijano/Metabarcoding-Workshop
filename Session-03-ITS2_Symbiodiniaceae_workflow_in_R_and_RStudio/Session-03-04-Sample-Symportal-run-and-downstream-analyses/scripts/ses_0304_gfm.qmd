@@ -1,0 +1,536 @@
+---
+title: "Session-03-04 Sample Symportal run and downstream analyses"
+format: gfm
+editor: visual
+---
+
+# Objects, classes & variables
+
+-   Everything in R is an **object**--data, function, etc.
+
+-   The blueprint of an object is its **class**--description of the object.
+
+-   A **variable** is an R object that contains an object.
+
+```{r}
+#| eval: false
+
+1 # is an object,
+class(1) # a numeric object or class numeric
+
+'one' # is an object,
+class('one') # a string object
+
+'1' # what is this?
+class('1') # a string object
+
+a # why does this not show? # it has nothing attached to it
+'a' # why is this okay?, it is designated as a string object
+
+# Note that any alphabet including "." and "_" can be used as a variable name (as long as it is preceded by an alphabet)
+
+a <- 1 # assigning an object to a variable
+```
+
+# Functions
+
+An R function is an object containing statements that are run together in an order.
+
+Can be a built-in (a base package \[no importation needed, included in R when you downloaded it\]) or user defined 🤓
+
+Algebra days... 🍎\
+f(x) = x \* x (the function of "f" at x)
+
+For example, x = 3, the result will be 9. We know that this function squares any numeric object.
+
+```{r}
+square_a_stuff <- 
+  function(x){
+			squared_stuff = x * x
+			return(squared_stuff)
+			}
+```
+
+How do we use a function?
+
+bash scripting: `conda` **activate** *qiime2.2023.7*
+
+```{r}
+square_a_stuff(8)
+```
+
+# Import packages
+
+Before starting, it is important to import the important packages that will be used in a run. 📖
+
+For this tutorial, the main packages are: `tidyverse` and `vegan`.
+
+Note that there are many more packages that can be used but for the purpose of this workshop... we'll just be using these two. 🤓
+
+First, you need to download the packages.
+
+```{r}
+#| eval: false
+install.packages(c('tidyverse, vegan'))
+```
+
+Then import/call them.
+
+```{r}
+library('tidyverse',
+        'vegan',
+        'ape')
+```
+
+# Import and clean data
+
+## Metadata
+
+Import.
+
+```{r}
+metadata <- 
+  read_csv('../data/Session-03-04-metadata.csv')
+```
+
+Clean.
+
+```{r}
+metadata1 <- 
+  metadata %>% 
+  filter(coi_validated_species == 'Ts'| coi_validated_species == 'Tg') # Ts and Tg are wanted
+```
+
+## Symportal ITS2 sequences results
+
+Import.
+
+```{r}
+its2seq <- 
+  read_tsv('../data/Session-03-04-symportal-its2seq.txt')
+
+# Check dataframe
+head(its2seq)
+tail(its2seq)
+```
+
+Clean.
+
+```{r}
+its2seq1 <- 
+  its2seq %>% 
+  slice(1:190)
+
+colnames(its2seq1) # Large number of
+```
+
+Make it cleaner.
+
+```{r}
+its2seq2 <- 
+  its2seq1 %>% 
+  select(2,40:500) %>% 
+  filter(sample_name %in% pull(metadata1, transformed))
+```
+
+## Merge metadata and ITS2 sequences
+
+Merge metadata and ITS2 sequences and clean. 🧹
+
+```{r}
+its2seq_metadata <- 
+  metadata1 %>%
+  select(!sample_name) %>% 
+  rename(sample_name = transformed) %>% 
+  left_join(its2seq2, by = 'sample_name') %>% 
+  select(!c(1:6)) %>% 
+  select(!c(2,4,6,7))
+```
+
+# Data analysis
+
+## Abundance plots
+
+### Genus
+
+Clean data.
+
+```{r}
+gen_metadata <- 
+  its2seq_metadata %>% 
+  rowwise() %>% 
+  mutate(A = sum(c_across(contains('A', ignore.case = F))),
+         C = sum(c_across(contains('C', ignore.case = F))),
+         D = sum(c_across(contains('D', ignore.case = F))),
+         G = sum(c_across(contains('G', ignore.case = F)))) %>% 
+  select(c(1:3, 465:468))
+
+gen_metadata1 <- 
+  gen_metadata %>% 
+  pivot_longer(cols = c(4:7),
+               names_to = 'Genus',
+               values_to = 'Count') %>% 
+  pivot_longer(cols = c(2:3),
+               names_to = 'facet_param',
+               values_to = 'x')
+```
+
+Make plot.
+
+```{r}
+gen_metadata1_plot <- 
+  gen_metadata1 %>% 
+  mutate(x = str_replace(x, 'Tridacna', 'T.')) %>% 
+  ggplot(aes(x = x,
+             y = Count,
+             fill = Genus)) +
+  geom_bar(position="fill", 
+           stat="identity") +
+  facet_grid(cols = vars(facet_param),
+             scales = 'free_x',
+             space = 'free_x') +
+  labs(y = 'Relative abundance (%)') +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_blank())
+
+ggsave(gen_metadata1_plot,
+       filename = '../results/gen_metadata1_plot.png',
+       width = 300,
+       height = 150, 
+       units = "mm",
+       type = 'cairo',
+       device = 'png')
+```
+
+### ITS2 sequence
+
+clean data.
+
+```{r}
+its2seq_metadata1 <- 
+  its2seq_metadata %>% 
+  pivot_longer(cols = !c(1:3),
+               names_to = 'ITS2',
+               values_to = 'Count') %>% 
+  pivot_longer(cols = c(2:3),
+               names_to = 'facet_param',
+               values_to = 'x')
+```
+
+Make plot.
+
+```{r}
+its2seq_metadata1_plot <- 
+  its2seq_metadata1 %>% 
+  mutate(x = str_replace(x, 'Tridacna', 'T.')) %>% 
+  ggplot(aes(x = x,
+             y = Count,
+             fill = ITS2)) +
+  geom_bar(position="fill", 
+           stat="identity") +
+  facet_grid(cols = vars(facet_param),
+             scales = 'free_x',
+             space = 'free_x') +
+  labs(y = 'Relative abundance (%)') +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_blank())
+```
+
+Get top 10.
+
+```{r}
+its2seq_metadata2 <- 
+  its2seq_metadata %>% 
+  select(!c(2:3)) %>% 
+  pivot_longer(cols = !1,
+               names_to = 'ITS2',
+               values_to = 'Count') %>% 
+  group_by(ITS2) %>% 
+  summarise(`Total count` = sum(Count)) %>% 
+  arrange(desc(`Total count`)) %>% 
+  mutate(`Relative abundance (%)` = round(`Total count`/6750449 * 100,2))
+
+write_csv(its2seq_metadata2,
+          '../results/its2seq_metadata2_relativeabundance.csv')
+```
+
+Make a plot.
+
+```{r}
+its2seq_metadata1_plot <- 
+  its2seq_metadata1 %>% 
+  mutate(x = str_replace(x, 'Tridacna', 'T.')) %>% 
+  filter(ITS2 %in% pull(slice(its2seq_metadata2, 1:10), ITS2)) %>% 
+  ggplot(aes(x = x,
+             y = Count,
+             fill = ITS2)) +
+  geom_bar(position="fill", 
+           stat="identity") +
+  facet_grid(cols = vars(facet_param),
+             scales = 'free_x',
+             space = 'free_x') +
+  labs(y = 'Relative abundance (%)') +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        axis.title.x = element_blank())
+
+ggsave(its2seq_metadata1_plot,
+       filename = '../results/its2seq_metadata1_plot.png',
+       width = 300,
+       height = 150, 
+       units = "mm",
+       type = 'cairo',
+       device = 'png')
+```
+
+Get relative abundance per species and site.
+
+```{r}
+its2seq_metadata1_relativeabundance <- 
+  its2seq_metadata1 %>% 
+  group_by(x, ITS2) %>% 
+  summarise(`Total count` = sum(Count)) %>% 
+  mutate(group = case_when(str_detect(x, 'Tridacna') ~ 'GC species',
+                           .default = 'Site'))
+
+its2seq_metadata1_relativeabundance_site <- 
+  its2seq_metadata1_relativeabundance %>% 
+  filter(group == 'Site')  %>% 
+  mutate('Relative abundance' = `Total count`/sum(`Total count`)*100)
+
+write_csv(its2seq_metadata1_relativeabundance_site,
+          '../results/its2seq_metadata2_relativeabundance_site.csv')
+
+###
+
+its2seq_metadata1_relativeabundance_gc <- 
+  its2seq_metadata1_relativeabundance %>% 
+  filter(group == 'GC species')  %>% 
+  mutate('Relative abundance' = `Total count`/sum(`Total count`)*100)
+
+write_csv(its2seq_metadata1_relativeabundance_gc,
+          '../results/its2seq_metadata2_relativeabundance_gc.csv')
+```
+
+## Beta diversity
+
+### Make matrices
+
+Make a metadata matrix.
+
+Note: most vegan packages use matrices as input, not matrix, error! ⚠️
+
+```{r}
+metadata1_matrix <- 
+  metadata1 %>% 
+  select(!sample_name) %>% 
+  rename(sample_name = transformed) %>% 
+  select(sample_name, comple_species, region) %>% 
+  arrange(desc(sample_name)) %>% 
+  mutate(sample_name2 = sample_name) %>% 
+  column_to_rownames('sample_name2')
+```
+
+Make an abundance table matrix.
+
+```{r}
+its2seq2_matrix <- 
+  its2seq_metadata %>% 
+  select(!c(2,3)) %>% 
+  arrange(desc(sample_name)) %>% 
+  column_to_rownames('sample_name')
+```
+
+### Compute Bray-Curtis
+
+Compute Bray-Curtis
+
+```{r}
+its2seq2_matrix_bc <- 
+  vegan::vegdist(its2seq2_matrix)
+
+write.csv(its2seq2_matrix_bc %>% as.matrix(),
+          '../results/its2seq2_matrix_bc.csv')
+```
+
+### PCoA
+
+Bray-Curtis ➡️ PCoA.
+
+```{r}
+its2seq2_matrix_bc_pcoa <- 
+  ape::pcoa(its2seq2_matrix_bc)
+
+its2seq2_matrix_bc_pcoa1 <- 
+  ape::pcoa(its2seq2_matrix_bc) %>% 
+  .$vectors %>% 
+  as_data_frame() %>% 
+  rownames_to_column('bc_name')
+
+metadata1_matrix1 <- 
+  metadata1_matrix %>% 
+  mutate(bc_name = 1:n())
+
+its2seq2_pcoa_meta <- 
+  its2seq2_matrix_bc_pcoa1 %>% 
+  type_convert() %>% 
+  left_join(metadata1_matrix1,
+            by = 'bc_name') %>% 
+  relocate(36:38)
+```
+
+Plot PCoA for species comparison.
+
+```{r}
+its2seq2_pcoa_meta_plot_species <- 
+  its2seq2_pcoa_meta %>% 
+  ggplot(aes(x = Axis.1,
+             y = Axis.2,
+             color = comple_species)) +
+  geom_vline(xintercept = 0, linetype = 'dashed', color = 'gray') +
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'gray') +
+  geom_point(size=4) +
+  stat_ellipse() +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
+
+Plot PCoA for site.
+
+```{r}
+its2seq2_pcoa_meta_plot_site <- 
+  its2seq2_pcoa_meta %>% 
+  ggplot(aes(x = Axis.1,
+             y = Axis.2,
+             color = region)) +
+  geom_vline(xintercept = 0, linetype = 'dashed', color = 'gray') +
+  geom_hline(yintercept = 0, linetype = 'dashed', color = 'gray') +
+  geom_point(size=4) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
+
+### PERMANOVA
+
+```{r}
+its2seq2_pcoa_permanova <- 
+  vegan::adonis2(its2seq2_matrix_bc ~ `comple_species` * `region`, 
+          data = metadata1_matrix1, 
+          permutations = 9999)
+
+write_csv(its2seq2_pcoa_permanova %>% rownames_to_column('Parameters'),
+          '../results/its2seq2_pcoa_permanova.csv')
+```
+
+### PERMDISP
+
+```{r}
+its2seq2_pcoa_permdisp_gc <- 
+  vegan::betadisper(its2seq2_matrix_bc,
+             metadata1_matrix1 %>% pull(comple_species)) %>% 
+  anova() %>% 
+  rownames_to_column('Parameters') %>% 
+  as_tibble() %>% 
+  drop_na() %>% 
+  mutate('Group comparison' = 'Giant clam species') %>% 
+  relocate('Group comparison')
+
+write_csv(its2seq2_pcoa_permdisp_gc,
+          '../results/its2seq2_pcoa_permdisp_gc.csv')
+  
+its2seq2_pcoa_permdisp_site <- 
+  vegan::betadisper(its2seq2_matrix_bc,
+             metadata1_matrix1 %>% pull(region)) %>% 
+  anova() %>% 
+  rownames_to_column('Parameters') %>% 
+  as_tibble() %>% 
+  drop_na() %>% 
+  mutate('Group comparison' = 'Site') %>% 
+  relocate('Group comparison')
+
+write_csv(its2seq2_pcoa_permdisp_gc,
+          '../results/its2seq2_pcoa_permdisp_site.csv')
+```
+
+## Alpha diversity
+
+Compute alpha diversity.
+
+```{r}
+its2seq_metadata_alpha <- 
+  its2seq_metadata %>% 
+  pivot_longer(cols = !c(1:3),
+               names_to = 'ITS2',
+               values_to = 'Count') %>% 
+  group_by(sample_name) %>% 
+  summarise(observed_its2seqs = vegan::specnumber(Count),
+            shannon = vegan::diversity(Count)) %>% 
+  left_join(metadata1_matrix,
+            by = 'sample_name')
+```
+
+### Boxplots
+
+Clean data.
+
+```{r}
+its2seq_metadata_alpha_plot <- 
+  its2seq_metadata_alpha %>% 
+  mutate(comple_species = str_replace(comple_species, 'Tridacna', 'T.')) %>% 
+  pivot_longer(cols = c(2,3),
+               names_to = 'alpha_metric',
+               values_to = 'alpha_value') %>% 
+  pivot_longer(cols = c(comple_species, region),
+               names_to = 'facet_parameter',
+               values_to = 'group') %>% 
+  ggplot(aes(x = group,
+             y = alpha_value)) +
+  geom_violin(trim = F,
+              color = NA,
+              alpha = 0.5,
+              fill = 'black') +
+  geom_boxplot(fill = 'black',
+               width = 0.04,
+               outlier.shape = NA) + 
+  stat_summary(geom = 'point',
+               fun = median,
+               shape = 21,
+               size = 2,
+               fill = 'white') +
+  facet_grid(rows = vars(alpha_metric),
+             cols = vars(facet_parameter),
+             scales = 'free',
+             space = 'free_x') +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+ggsave(its2seq_metadata_alpha_plot,
+       filename = '../results/its2seq_metadata_alpha_plot.png',
+       width = 300,
+       height = 150, 
+       units = "mm",
+       type = 'cairo',
+       device = 'png')
+```
+
+### Kruskal-Wallis (non-parametric ANOVA)
+
+Do stats.
+
+```{r}
+its2seq_metadata_alpha_site_kw <- 
+  its2seq_metadata_alpha %>% 
+  kruskal.test(observed_its2seqs ~ region, data = .)
+
+write_csv(its2seq_metadata_alpha_site_kw %>% unclass() %>% as_tibble(),
+          '../results/its2seq_metadata_alpha_site_kw.csv')
+
+its2seq_metadata_alpha_gc_kw <- 
+  its2seq_metadata_alpha %>% 
+  kruskal.test(observed_its2seqs ~ comple_species, data = .)
+
+write_csv(its2seq_metadata_alpha_gc_kw %>% unclass() %>% as_tibble(),
+          '../results/its2seq_metadata_alpha_gc_kw.csv')
+```
