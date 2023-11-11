@@ -17,5 +17,4 @@ This workshop includes:
 - Symportal, what gives?
 - Ecological statistics, reitration
 - Short intro to R
-- Sample submission to Symportal
-- ITS2 community analysis
+- Sample Symportal run and downstream analyses
